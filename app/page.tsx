@@ -74,15 +74,6 @@ export default function Portfolio() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Auto-rotate projects every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentProject((prev) => (prev + 1) % projects.length);
-    }, 7000);
-
-    return () => clearInterval(interval);
-  }, [projects.length]);
-
   const skillCategories = [
     {
       title: 'Languages',
@@ -183,6 +174,40 @@ export default function Portfolio() {
     { id: 'skills', label: 'Skills', icon: Code },
     { id: 'contact', label: 'Contact', icon: MessageCircle },
   ];
+
+  // Auto-rotate projects every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentProject((prev) => (prev + 1) % projects.length);
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [projects.length]);
+
+  // Update active section based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navItems.map(item => document.getElementById(item.id));
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      sections.forEach((section, index) => {
+        if (section) {
+          const sectionTop = section.offsetTop;
+          const sectionBottom = sectionTop + section.offsetHeight;
+
+          if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            setActiveSection(navItems[index].id);
+          }
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Call once to set initial active section
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [navItems]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
